@@ -61,7 +61,7 @@ export function invertirTexto(texto) {
 }
 
 // -------------------------------------------------------------
-// Ejercicio 5 · ¿Es primo?
+// Ejercicio 5 · ¿Es primo? (extra)
 // Un número primo es mayor que 1 y solo es divisible entre 1 y entre sí mismo.
 //   esPrimo(7) → true
 //   esPrimo(8) → false
@@ -78,7 +78,7 @@ export function esPrimo(n) {
 }
 
 // -------------------------------------------------------------
-// Ejercicio 6 · Contar dígitos
+// Ejercicio 6 · Contar dígitos (extra)
 // Devuelve cuántas cifras tiene un número entero positivo. Usa while.
 //   contarDigitos(12345) → 5
 //   contarDigitos(0)     → 1
