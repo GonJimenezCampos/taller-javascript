@@ -32,7 +32,7 @@ const estado = {
 // Pista: new Date().getFullYear()
 // -------------------------------------------------------------
 function pintarAnio() {
-  // Escribe tu código aquí
+  $('#anio').textContent = new Date().getFullYear();
 }
 
 // -------------------------------------------------------------
@@ -45,7 +45,17 @@ function pintarAnio() {
 //   document.title              → 'Alex García · Portfolio'
 // -------------------------------------------------------------
 function pintarPerfil() {
-  // Escribe tu código aquí
+  $('#perfil-nombre').textContent = perfil.nombre;
+  $('#pie-nombre').textContent = perfil.nombre;
+  $('#perfil-rol').textContent = perfil.rol;
+  $('#perfil-intro').textContent = perfil.intro;
+  $('#logo').textContent = perfil.nombre
+    .split(' ')
+    .map((palabra) => palabra[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+  document.title = `${perfil.nombre} · Portfolio`;
 }
 
 // -------------------------------------------------------------
@@ -57,7 +67,21 @@ function pintarPerfil() {
 //                      por cada red de perfil.redes
 // -------------------------------------------------------------
 function pintarSobreMi() {
-  // Escribe tu código aquí
+  const sobreMi = $('#perfil-sobre-mi');
+  sobreMi.innerHTML = '';
+  for (const texto of perfil.sobreMi) {
+    const parrafo = document.createElement('p');
+    parrafo.textContent = texto;
+    sobreMi.append(parrafo);
+  }
+
+  const email = $('#perfil-email');
+  email.href = `mailto:${perfil.email}`;
+  email.textContent = perfil.email;
+
+  $('#perfil-redes').innerHTML = perfil.redes
+    .map((red) => `<li><a href="${red.url}" target="_blank" rel="noopener">${red.nombre}</a></li>`)
+    .join('');
 }
 
 // -------------------------------------------------------------
@@ -72,7 +96,17 @@ function pintarSobreMi() {
 // (La barra la dibuja el CSS a partir de --nivel, que va de 1 a 5)
 // -------------------------------------------------------------
 function pintarHabilidades() {
-  // Escribe tu código aquí
+  const lista = $('#habilidades');
+  lista.innerHTML = '';
+  for (const habilidad of habilidades) {
+    const item = document.createElement('li');
+    item.className = 'habilidad';
+    item.innerHTML = `
+      <span>${habilidad.nombre}</span>
+      <span class="nivel" style="--nivel: ${habilidad.nivel}"></span>
+    `;
+    lista.append(item);
+  }
 }
 
 // -------------------------------------------------------------
@@ -82,7 +116,14 @@ function pintarHabilidades() {
 // Pista: mira el apartado fetch del README del módulo 08.
 // -------------------------------------------------------------
 async function cargarProyectos() {
-  // Escribe tu código aquí
+  try {
+    const respuesta = await fetch('data/proyectos.json');
+    if (!respuesta.ok) throw new Error(`Error ${respuesta.status} al pedir proyectos.json`);
+    return await respuesta.json();
+  } catch (error) {
+    console.error('No se han podido cargar los proyectos:', error);
+    return [];
+  }
 }
 
 // -------------------------------------------------------------
@@ -109,7 +150,28 @@ async function cargarProyectos() {
 // nunca lo uses con texto que escriba un usuario).
 // -------------------------------------------------------------
 function crearTarjetaProyecto(proyecto) {
-  // Escribe tu código aquí
+  const tarjeta = document.createElement('article');
+  tarjeta.className = 'tarjeta';
+  if (proyecto.destacado) tarjeta.classList.add('destacada');
+
+  const etiquetas = proyecto.tecnologias.map((tecnologia) => `<li>${tecnologia}</li>`).join('');
+  tarjeta.innerHTML = `
+    <div class="tarjeta-cuerpo">
+      ${proyecto.destacado ? '<span class="insignia">Destacado</span>' : ''}
+      <h3>${proyecto.titulo}</h3>
+      <p>${proyecto.descripcion}</p>
+      <ul class="etiquetas">${etiquetas}</ul>
+      <div class="tarjeta-enlaces">
+        ${proyecto.demo ? `<a href="${proyecto.demo}" target="_blank" rel="noopener">Ver demo</a>` : ''}
+        ${proyecto.codigo ? `<a href="${proyecto.codigo}" target="_blank" rel="noopener">Código</a>` : ''}
+        <button class="enlace-boton" type="button">Ver más</button>
+      </div>
+    </div>
+  `;
+
+  // Nivel 3.3: el botón "Ver más" abre la ventana de detalle
+  tarjeta.querySelector('.enlace-boton').addEventListener('click', () => abrirDetalle(proyecto));
+  return tarjeta;
 }
 
 // -------------------------------------------------------------
@@ -119,7 +181,15 @@ function crearTarjetaProyecto(proyecto) {
 //   - Si no, añade la tarjeta de cada proyecto (usa crearTarjetaProyecto).
 // -------------------------------------------------------------
 function pintarProyectos(lista) {
-  // Escribe tu código aquí
+  const rejilla = $('#rejilla-proyectos');
+  rejilla.innerHTML = '';
+  if (lista.length === 0) {
+    rejilla.innerHTML = '<p class="aviso">No hay proyectos que coincidan.</p>';
+    return;
+  }
+  for (const proyecto of lista) {
+    rejilla.append(crearTarjetaProyecto(proyecto));
+  }
 }
 
 // Ya hecha: vuelve a pintar los proyectos teniendo en cuenta filtro y búsqueda.
@@ -140,7 +210,7 @@ function actualizarProyectos() {
 //   ['CSS', 'HTML', 'JSON', 'JavaScript', 'Node']
 // -------------------------------------------------------------
 function obtenerTecnologias(proyectos) {
-  // Escribe tu código aquí
+  return [...new Set(proyectos.flatMap((proyecto) => proyecto.tecnologias))].sort();
 }
 
 // -------------------------------------------------------------
@@ -150,7 +220,12 @@ function obtenerTecnologias(proyectos) {
 //     (sin distinguir mayúsculas de minúsculas)
 // -------------------------------------------------------------
 function filtrarProyectos(proyectos) {
-  // Escribe tu código aquí
+  const texto = estado.busqueda.trim().toLowerCase();
+  return proyectos.filter((proyecto) => {
+    const pasaFiltro = estado.filtro === 'Todos' || proyecto.tecnologias.includes(estado.filtro);
+    const pasaBusqueda = `${proyecto.titulo} ${proyecto.descripcion}`.toLowerCase().includes(texto);
+    return pasaFiltro && pasaBusqueda;
+  });
 }
 
 // -------------------------------------------------------------
@@ -166,7 +241,25 @@ function filtrarProyectos(proyectos) {
 //   - llama a actualizarProyectos()
 // -------------------------------------------------------------
 function pintarFiltros() {
-  // Escribe tu código aquí
+  const contenedor = $('#filtros');
+  contenedor.innerHTML = '';
+  const opciones = ['Todos', ...obtenerTecnologias(estado.proyectos)];
+
+  for (const opcion of opciones) {
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = 'filtro';
+    boton.textContent = opcion;
+    if (opcion === estado.filtro) boton.classList.add('activo');
+
+    boton.addEventListener('click', () => {
+      estado.filtro = opcion;
+      contenedor.querySelectorAll('.filtro').forEach((b) => b.classList.remove('activo'));
+      boton.classList.add('activo');
+      actualizarProyectos();
+    });
+    contenedor.append(boton);
+  }
 }
 
 // -------------------------------------------------------------
@@ -174,14 +267,17 @@ function pintarFiltros() {
 // estado.busqueda y llama a actualizarProyectos().
 // -------------------------------------------------------------
 function activarBuscador() {
-  // Escribe tu código aquí
+  $('#buscador').addEventListener('input', (evento) => {
+    estado.busqueda = evento.target.value;
+    actualizarProyectos();
+  });
 }
 
 // -------------------------------------------------------------
 // 2.5 · Escribe en #contador-proyectos: 'Mostrando 3 de 5 proyectos'
 // -------------------------------------------------------------
 function pintarContador(visibles, total) {
-  // Escribe tu código aquí
+  $('#contador-proyectos').textContent = `Mostrando ${visibles} de ${total} proyectos`;
 }
 
 // -------------------------------------------------------------
@@ -198,7 +294,11 @@ function pintarContador(visibles, total) {
 //   → {}   (sin errores)
 // -------------------------------------------------------------
 function validarContacto({ nombre, email, mensaje }) {
-  // Escribe tu código aquí
+  const errores = {};
+  if (nombre.trim().length < 2) errores.nombre = 'Escribe tu nombre (mínimo 2 caracteres).';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errores.email = 'Ese email no parece válido.';
+  if (mensaje.trim().length < 10) errores.mensaje = 'El mensaje debe tener al menos 10 caracteres.';
+  return errores;
 }
 
 // -------------------------------------------------------------
@@ -214,7 +314,21 @@ function validarContacto({ nombre, email, mensaje }) {
 //      Si hay errores: oculta #form-exito.
 // -------------------------------------------------------------
 function activarFormulario() {
-  // Escribe tu código aquí
+  const formulario = $('#form-contacto');
+  formulario.addEventListener('submit', (evento) => {
+    evento.preventDefault();
+    const datos = Object.fromEntries(new FormData(formulario));
+    const errores = validarContacto(datos);
+
+    for (const campo of ['nombre', 'email', 'mensaje']) {
+      $(`#error-${campo}`).textContent = errores[campo] ?? '';
+      formulario.elements[campo].classList.toggle('invalido', campo in errores);
+    }
+
+    const valido = Object.keys(errores).length === 0;
+    $('#form-exito').hidden = !valido;
+    if (valido) formulario.reset();
+  });
 }
 
 // =============================================================
@@ -231,7 +345,14 @@ function activarFormulario() {
 //     window.matchMedia('(prefers-color-scheme: dark)').matches → true si es oscuro
 // -------------------------------------------------------------
 function iniciarTema() {
-  // Escribe tu código aquí
+  const prefiereOscuro = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.dataset.tema = localStorage.getItem('tema') ?? (prefiereOscuro ? 'oscuro' : 'claro');
+
+  $('#btn-tema').addEventListener('click', () => {
+    const nuevo = document.documentElement.dataset.tema === 'oscuro' ? 'claro' : 'oscuro';
+    document.documentElement.dataset.tema = nuevo;
+    localStorage.setItem('tema', nuevo);
+  });
 }
 
 // -------------------------------------------------------------
@@ -242,7 +363,21 @@ function iniciarTema() {
 //   Busca "IntersectionObserver" en MDN: tiene un ejemplo casi igual.
 // -------------------------------------------------------------
 function iniciarAnimaciones() {
-  // Escribe tu código aquí
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.documentElement.classList.add('animaciones');
+
+  const observador = new IntersectionObserver(
+    (entradas) => {
+      for (const entrada of entradas) {
+        if (entrada.isIntersecting) {
+          entrada.target.classList.add('visible');
+          observador.unobserve(entrada.target);
+        }
+      }
+    },
+    { threshold: 0.15 },
+  );
+  document.querySelectorAll('.revelar').forEach((elemento) => observador.observe(elemento));
 }
 
 // -------------------------------------------------------------
@@ -255,11 +390,22 @@ function iniciarAnimaciones() {
 //     Bonus: que también se cierre al hacer clic fuera del contenido.
 // -------------------------------------------------------------
 function abrirDetalle(proyecto) {
-  // Escribe tu código aquí
+  const etiquetas = proyecto.tecnologias.map((tecnologia) => `<li>${tecnologia}</li>`).join('');
+  $('#modal-contenido').innerHTML = `
+    <h3>${proyecto.titulo}</h3>
+    <p>${proyecto.detalle ?? proyecto.descripcion}</p>
+    <ul class="etiquetas">${etiquetas}</ul>
+  `;
+  $('#modal-proyecto').showModal();
 }
 
 function activarModal() {
-  // Escribe tu código aquí
+  const modal = $('#modal-proyecto');
+  $('#modal-cerrar').addEventListener('click', () => modal.close());
+  modal.addEventListener('click', (evento) => {
+    // Si se hace clic en el fondo (el propio <dialog>), no en su contenido
+    if (evento.target === modal) modal.close();
+  });
 }
 
 // 3.4 · ¡Publícalo en internet con GitHub Pages! Mira el README del proyecto.

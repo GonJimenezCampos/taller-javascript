@@ -16,7 +16,7 @@ export const proyectosDeEjemplo = [
 //   crearPersona('Ada', 36) → { nombre: 'Ada', edad: 36 }
 // -------------------------------------------------------------
 export function crearPersona(nombre, edad) {
-  // Escribe tu código aquí
+  return { nombre, edad };
 }
 
 // -------------------------------------------------------------
@@ -26,7 +26,8 @@ export function crearPersona(nombre, edad) {
 // Reto: usa desestructuración.
 // -------------------------------------------------------------
 export function presentar(persona) {
-  // Escribe tu código aquí
+  const { nombre, edad } = persona;
+  return `Me llamo ${nombre} y tengo ${edad} años.`;
 }
 
 // -------------------------------------------------------------
@@ -37,7 +38,7 @@ export function presentar(persona) {
 // Pista: spread { ...persona }
 // -------------------------------------------------------------
 export function cumplirAnios(persona) {
-  // Escribe tu código aquí
+  return { ...persona, edad: persona.edad + 1 };
 }
 
 // -------------------------------------------------------------
@@ -46,7 +47,7 @@ export function cumplirAnios(persona) {
 //   contarPropiedades({ a: 1, b: 2, c: 3 }) → 3
 // -------------------------------------------------------------
 export function contarPropiedades(objeto) {
-  // Escribe tu código aquí
+  return Object.keys(objeto).length;
 }
 
 // -------------------------------------------------------------
@@ -55,7 +56,7 @@ export function contarPropiedades(objeto) {
 //   titulos(proyectosDeEjemplo) → ['Calculadora', 'Blog personal', 'Lista de tareas']
 // -------------------------------------------------------------
 export function titulos(proyectos) {
-  // Escribe tu código aquí
+  return proyectos.map((proyecto) => proyecto.titulo);
 }
 
 // -------------------------------------------------------------
@@ -64,7 +65,7 @@ export function titulos(proyectos) {
 //   filtrarPorTecnologia(proyectosDeEjemplo, 'CSS') → [ {Calculadora…}, {Blog personal…} ]
 // -------------------------------------------------------------
 export function filtrarPorTecnologia(proyectos, tecnologia) {
-  // Escribe tu código aquí
+  return proyectos.filter((proyecto) => proyecto.tecnologias.includes(tecnologia));
 }
 
 // -------------------------------------------------------------
@@ -75,7 +76,7 @@ export function filtrarPorTecnologia(proyectos, tecnologia) {
 // Pista: find devuelve undefined si no encuentra nada… y tú tienes que devolver null.
 // -------------------------------------------------------------
 export function buscarPorId(proyectos, id) {
-  // Escribe tu código aquí
+  return proyectos.find((proyecto) => proyecto.id === id) ?? null;
 }
 
 // -------------------------------------------------------------
@@ -86,7 +87,8 @@ export function buscarPorId(proyectos, id) {
 // Pista: flatMap + new Set + sort
 // -------------------------------------------------------------
 export function tecnologiasUnicas(proyectos) {
-  // Escribe tu código aquí
+  const todas = proyectos.flatMap((proyecto) => proyecto.tecnologias);
+  return [...new Set(todas)].sort();
 }
 
 // -------------------------------------------------------------
@@ -96,7 +98,13 @@ export function tecnologiasUnicas(proyectos) {
 // Pista: empieza con un objeto vacío {} y ve sumando. objeto[clave] te será útil.
 // -------------------------------------------------------------
 export function contarPorTecnologia(proyectos) {
-  // Escribe tu código aquí
+  const cuenta = {};
+  for (const proyecto of proyectos) {
+    for (const tecnologia of proyecto.tecnologias) {
+      cuenta[tecnologia] = (cuenta[tecnologia] ?? 0) + 1;
+    }
+  }
+  return cuenta;
 }
 
 // -------------------------------------------------------------
@@ -106,7 +114,7 @@ export function contarPorTecnologia(proyectos) {
 // Pista: convierte a texto JSON y vuelve a convertirlo en objeto.
 // -------------------------------------------------------------
 export function clonarConJSON(objeto) {
-  // Escribe tu código aquí
+  return JSON.parse(JSON.stringify(objeto));
 }
 
 // =============================================================

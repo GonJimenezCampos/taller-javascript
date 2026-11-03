@@ -11,7 +11,11 @@
 //   sumarHasta(0) → 0
 // -------------------------------------------------------------
 export function sumarHasta(n) {
-  // Escribe tu código aquí
+  let total = 0;
+  for (let i = 1; i <= n; i++) {
+    total += i;
+  }
+  return total;
 }
 
 // -------------------------------------------------------------
@@ -21,7 +25,11 @@ export function sumarHasta(n) {
 // Pista: como el acumulador de la suma, pero… ¿en qué valor debe empezar?
 // -------------------------------------------------------------
 export function factorial(n) {
-  // Escribe tu código aquí
+  let resultado = 1;
+  for (let i = 2; i <= n; i++) {
+    resultado *= i;
+  }
+  return resultado;
 }
 
 // -------------------------------------------------------------
@@ -32,7 +40,11 @@ export function factorial(n) {
 // Pista: for...of y 'aeiou'.includes(...)
 // -------------------------------------------------------------
 export function contarVocales(texto) {
-  // Escribe tu código aquí
+  let vocales = 0;
+  for (const letra of texto.toLowerCase()) {
+    if ('aeiou'.includes(letra)) vocales++;
+  }
+  return vocales;
 }
 
 // -------------------------------------------------------------
@@ -41,7 +53,11 @@ export function contarVocales(texto) {
 //   invertirTexto('hola') → 'aloh'
 // -------------------------------------------------------------
 export function invertirTexto(texto) {
-  // Escribe tu código aquí
+  let alReves = '';
+  for (let i = texto.length - 1; i >= 0; i--) {
+    alReves += texto[i];
+  }
+  return alReves;
 }
 
 // -------------------------------------------------------------
@@ -54,7 +70,11 @@ export function invertirTexto(texto) {
 //        En cuanto uno divida exacto, ya sabes la respuesta.
 // -------------------------------------------------------------
 export function esPrimo(n) {
-  // Escribe tu código aquí
+  if (n < 2) return false;
+  for (let divisor = 2; divisor * divisor <= n; divisor++) {
+    if (n % divisor === 0) return false;
+  }
+  return true;
 }
 
 // -------------------------------------------------------------
@@ -65,7 +85,12 @@ export function esPrimo(n) {
 // Pista: Math.floor(n / 10) le quita la última cifra a n.
 // -------------------------------------------------------------
 export function contarDigitos(n) {
-  // Escribe tu código aquí
+  let digitos = 1;
+  while (n >= 10) {
+    n = Math.floor(n / 10);
+    digitos++;
+  }
+  return digitos;
 }
 
 // -------------------------------------------------------------
@@ -74,7 +99,11 @@ export function contarDigitos(n) {
 //   cuentaAtras(0) → '¡despegue!'
 // -------------------------------------------------------------
 export function cuentaAtras(n) {
-  // Escribe tu código aquí
+  let texto = '';
+  for (let i = n; i > 0; i--) {
+    texto += `${i}, `;
+  }
+  return texto + '¡despegue!';
 }
 
 // -------------------------------------------------------------
@@ -86,7 +115,14 @@ export function cuentaAtras(n) {
 // Reto: hazlo con dos bucles, uno dentro de otro.
 // -------------------------------------------------------------
 export function dibujarEscalera(n) {
-  // Escribe tu código aquí
+  let escalera = '';
+  for (let fila = 1; fila <= n; fila++) {
+    for (let columna = 1; columna <= fila; columna++) {
+      escalera += '#';
+    }
+    if (fila < n) escalera += '\n';
+  }
+  return escalera;
 }
 
 // =============================================================
